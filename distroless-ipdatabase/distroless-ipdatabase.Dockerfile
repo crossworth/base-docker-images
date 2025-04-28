@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     unzip \
     tar \
+    ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
