@@ -1,0 +1,36 @@
+name: Build distroless-ipdatabase
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 15 * * MON"
+  push:
+    paths:
+      - distroless-ipdatabase/**
+    branches:
+      - 'main'
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          file: distroless-ipdatabase/distroless-ipdatabase.Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/distroless-ipdatabase:latest
+          build-args: |
+            MAXMIND_LICENSE_KEY=${{ secrets.MAXMIND_LICENSE_KEY }}
+            IP2LOCATION_TOKEN=${{ secrets.IP2LOCATION_TOKEN }}
